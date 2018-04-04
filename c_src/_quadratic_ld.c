@@ -58,8 +58,7 @@ static PyObject *_quadratic_ld(PyObject *self, PyObject *args)
      I(r) = [1 - c1 * (1 - sqrt(1 - (r/rs)^2)) - c2*(1 - sqrt(1 - (r/rs)^2))^2]/(1 - c1/3 - c2/6)/pi
 */
     const int nthreads;
-    const double c1, c2;
-    const double p0, p1;
+    const double c1, c2, p0, p1;
     PyArrayObject *ds, *flux;
     npy_intp dims[1];
 
@@ -204,11 +203,11 @@ static PyObject *_quadratic_ld(PyObject *self, PyObject *args)
             double Ek = ellec(q);
             double n = 1.0/x1 - 1.0;
             double Pk = ellpic_bulirsch(n, q);
-            lambdad = 1.0/9.0/M_PI/sqrt(p0*d)*(((1.0 - x2)*(2.0*x2 +  \
+            lambdad = (p1*p1/p0/p0) * 1.0/9.0/M_PI/sqrt(p0*d)*(((1.0 - x2)*(2.0*x2 +  \
                     x1 - 3.0) - 3.0*x3*(x2 - 2.0))*Kk + 4.0*p0*d*(d*d +  \
                     7.0*p0*p0 - 4.0)*Ek - 3.0*x3/x1*Pk);
             if(d < p0) lambdad += 2.0/3.0;
-            etad = 1.0/2.0/M_PI*(kap1 + p0*p0*(p0*p0 + 2.0*d*d)*kap0 -  \
+            etad = (p1*p1/p0/p0) * 1.0/2.0/M_PI*(kap1 + p0*p0*(p0*p0 + 2.0*d*d)*kap0 -  \
                 (1.0 + 5.0*p0*p0 + d*d)/4.0*sqrt((1.0 - x1)*(x2 - 1.0)));
             f_array[i] = 1.0 - ((1.0 - c1 - 2.0*c2)*lambdae + (c1 + 2.0*c2)*lambdad + c2*etad)/omega;
             continue;
@@ -216,7 +215,9 @@ static PyObject *_quadratic_ld(PyObject *self, PyObject *args)
         //occulting star transits the source:
         if(p0 <= 1.0  && d <= (1.0 - p0))
         {
-            etad = p0*p0/2.0*(p0*p0 + 2.0*d*d);
+            //lambdae = p0*p0;
+            etad =  (p1*p1/p0/p0) * p0*p0/2.0*(p0*p0 + 2.0*d*d);
+//            etad = p1*p1/2.0*(p1*p1 + 2.0*d*d);
             lambdae = p1*p1;
 
             //printf("zone 4.1\n");
@@ -226,13 +227,13 @@ static PyObject *_quadratic_ld(PyObject *self, PyObject *args)
             double n = x2/x1 - 1.0;
             double Pk = ellpic_bulirsch(n, q);
 
-            lambdad = 2.0/9.0/M_PI/sqrt(1.0 - x1)*((1.0 - 5.0*d*d + p1*p1 +  \
+            lambdad = (p1*p1/p0/p0) * 2.0/9.0/M_PI/sqrt(1.0 - x1)*((1.0 - 5.0*d*d + p0*p0 +  \
                      x3*x3)*Kk + (1.0 - x1)*(d*d + 7.0*p0*p0 - 4.0)*Ek - 3.0*x3/x1*Pk);
 
             // edge of planet hits edge of star
             if(fabs(p0 + d - 1.0) <= tol)
             {
-                lambdad = 2.0/3.0/M_PI*acos(1.0 - 2.0*p0) - 4.0/9.0/M_PI* \
+                lambdad = (p1*p1/p0/p0) * 2.0/3.0/M_PI*acos(1.0 - 2.0*p0) - 4.0/9.0/M_PI* \
                             sqrt(p0*(1.0 - p0))*(3.0 + 2.0*p0 - 8.0*p0*p0);
             }
             if(d < p0) lambdad += 2.0/3.0;
