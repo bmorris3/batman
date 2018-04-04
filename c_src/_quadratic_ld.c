@@ -233,10 +233,10 @@ static PyObject *_quadratic_ld(PyObject *self, PyObject *args)
             // edge of planet hits edge of star
             if(fabs(p0 + d - 1.0) <= tol)
             {
-                lambdad = (p1*p1/p0/p0) * 2.0/3.0/M_PI*acos(1.0 - 2.0*p0) - 4.0/9.0/M_PI* \
-                            sqrt(p0*(1.0 - p0))*(3.0 + 2.0*p0 - 8.0*p0*p0);
+                lambdad = (p1*p1/p0/p0) * (2.0/3.0/M_PI*acos(1.0 - 2.0*p0) - 4.0/9.0/M_PI* \
+                            sqrt(p0*(1.0 - p0))*(3.0 + 2.0*p0 - 8.0*p0*p0));
             }
-            if(d < p0) lambdad += 2.0/3.0;
+            if(d < p0) lambdad += (p1*p1/p0/p0) * (2.0/3.0);
         }
         f_array[i] = 1.0 - ((1.0 - c1 - 2.0*c2)*lambdae + (c1 + 2.0*c2)*lambdad + c2*etad)/omega;
     }
