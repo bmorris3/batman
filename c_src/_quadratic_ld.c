@@ -58,11 +58,12 @@ static PyObject *_quadratic_ld(PyObject *self, PyObject *args)
      I(r) = [1 - c1 * (1 - sqrt(1 - (r/rs)^2)) - c2*(1 - sqrt(1 - (r/rs)^2))^2]/(1 - c1/3 - c2/6)/pi
 */
     const int nthreads;
-    const double c1, c2, p;
+    const double c1, c2;
+    const double p0, p1;
     PyArrayObject *ds, *flux;
     npy_intp dims[1];
 
-    if(!PyArg_ParseTuple(args,"Odddi", &ds, &p, &c1, &c2, &nthreads)) return NULL;
+    if(!PyArg_ParseTuple(args,"Oddddi", &ds, &p0, &p1, &c1, &c2, &nthreads)) return NULL;
 
     dims[0] = PyArray_DIMS(ds)[0];
     flux = (PyArrayObject *) PyArray_SimpleNew(1, dims, PyArray_TYPE(ds));    //creates numpy array to store return flux values
@@ -104,36 +105,36 @@ static PyObject *_quadratic_ld(PyObject *self, PyObject *args)
         d = fabs(d);
 
         // check the corner cases
-        if(fabs(p - d) < tol)
+        if(fabs(p0 - d) < tol)
         {
-            d = p;
+            d = p0;
         }
-        if(fabs(p - 1.0 - d) < tol)
+        if(fabs(p0 - 1.0 - d) < tol)
         {
-            d = p - 1.0;
+            d = p0 - 1.0;
         }
-        if(fabs(1.0 - p - d) < tol)
+        if(fabs(1.0 - p0 - d) < tol)
         {
-            d = 1.0 - p;
+            d = 1.0 - p0;
         }
         if(d < tol)
         {
             d = 0.0;
         }
 
-        double x1 = pow((p - d), 2.0);
-        double x2 = pow((p + d), 2.0);
-        double x3 = p*p - d*d;
+        double x1 = pow((p0 - d), 2.0);
+        double x2 = pow((p0 + d), 2.0);
+        double x3 = p0*p0 - d*d;
 
         //source is unocculted:
-        if(d >= 1.0 + p)
+        if(d >= 1.0 + p0)
         {
             //printf("zone 1\n");
             f_array[i] = 1.0;
             continue;
         }
         //source is completely occulted:
-        if(p >= 1.0 && d <= p - 1.0)
+        if(p0 >= 1.0 && d <= p0 - 1.0)
         {
             //printf("zone 2\n");
             lambdad = 0.0;
@@ -143,40 +144,40 @@ static PyObject *_quadratic_ld(PyObject *self, PyObject *args)
             continue;
         }
         //source is partly occulted and occulting object crosses the limb:
-        if(d >= fabs(1.0 - p) && d <= 1.0 + p)
+        if(d >= fabs(1.0 - p0) && d <= 1.0 + p0)
         {
             //printf("zone 3\n");
-            kap1 = acos(MIN((1.0 - p*p + d*d)/2.0/d, 1.0));
-            kap0 = acos(MIN((p*p + d*d - 1.0)/2.0/p/d, 1.0));
-            lambdae = p*p*kap0 + kap1;
-            lambdae = (lambdae - 0.50*sqrt(MAX(4.0*d*d - pow((1.0 + d*d - p*p), 2.0), 0.0)))/M_PI;
+            kap1 = acos(MIN((1.0 - p0*p0 + d*d)/2.0/d, 1.0));
+            kap0 = acos(MIN((p0*p0 + d*d - 1.0)/2.0/p0/d, 1.0));
+            lambdae = p0*p0*kap0 + kap1;
+            lambdae = p1*p1/p0/p0 * (lambdae - 0.50*sqrt(MAX(4.0*d*d - pow((1.0 + d*d - p0*p0), 2.0), 0.0)))/M_PI;
         }
 
         //edge of the occulting star lies at the origin
-        if(d == p)
+        if(d == p0)
         {
             //printf("zone 5\n");
             if(d < 0.5)
             {
                 //printf("zone 5.2\n");
-                double q = 2.0*p;
+                double q = 2.0*p0;
                 double Kk = ellk(q);
                 double Ek = ellec(q);
-                lambdad = 1.0/3.0 + 2.0/9.0/M_PI*(4.0*(2.0*p*p - 1.0)*Ek + (1.0 - 4.0*p*p)*Kk);
-                etad = p*p/2.0*(p*p + 2.0*d*d);
+                lambdad = 1.0/3.0 + 2.0/9.0/M_PI*(4.0*(2.0*p0*p0 - 1.0)*Ek + (1.0 - 4.0*p0*p0)*Kk);
+                etad = p0*p0/2.0*(p0*p0 + 2.0*d*d);
                 f_array[i] = 1.0 - ((1.0 - c1 - 2.0*c2)*lambdae + (c1 + 2.0*c2)*lambdad + c2*etad)/omega;
                 continue;
             }
             else if(d > 0.5)
             {
                 //printf("zone 5.1\n");
-                double q = 0.5/p;
+                double q = 0.5/p0;
                 double Kk = ellk(q);
                 double Ek = ellec(q);
-                lambdad = 1.0/3.0 + 16.0*p/9.0/M_PI*(2.0*p*p - 1.0)*Ek -  \
-                          (32.0*pow(p, 4.0) - 20.0*p*p + 3.0)/9.0/M_PI/p*Kk;
-                etad = 1.0/2.0/M_PI*(kap1 + p*p*(p*p + 2.0*d*d)*kap0 -  \
-                                  (1.0 + 5.0*p*p + d*d)/4.0*sqrt((1.0 - x1)*(x2 - 1.0)));
+                lambdad = 1.0/3.0 + 16.0*p0/9.0/M_PI*(2.0*p0*p0 - 1.0)*Ek -  \
+                          (32.0*pow(p0, 4.0) - 20.0*p0*p0 + 3.0)/9.0/M_PI/p0*Kk;
+                etad = 1.0/2.0/M_PI*(kap1 + p0*p0*(p0*p0 + 2.0*d*d)*kap0 -  \
+                                  (1.0 + 5.0*p0*p0 + d*d)/4.0*sqrt((1.0 - x1)*(x2 - 1.0)));
             //    continue;
             }
             else
@@ -194,29 +195,29 @@ static PyObject *_quadratic_ld(PyObject *self, PyObject *args)
          //occulting star partly occults the source and crosses the limb:
         //if((d > 0.5 + fabs(p  - 0.5) && d < 1.0 + p) || (p > 0.5 && d > fabs(1.0 - p)*1.0001 \
         //&& d < p))  //the factor of 1.0001 is from the Mandel/Agol Fortran routine, but gave bad output for d near fabs(1-p)
-        if((d > 0.5 + fabs(p  - 0.5) && d < 1.0 + p) || (p > 0.5 && d > fabs(1.0 - p) \
-            && d < p))
+        if((d > 0.5 + fabs(p0  - 0.5) && d < 1.0 + p0) || (p0 > 0.5 && d > fabs(1.0 - p0) \
+            && d < p0))
         {
             //printf("zone 3.1\n");
-            double q = sqrt((1.0 - x1)/4.0/d/p);
+            double q = sqrt((1.0 - x1)/4.0/d/p0);
             double Kk = ellk(q);
             double Ek = ellec(q);
             double n = 1.0/x1 - 1.0;
             double Pk = ellpic_bulirsch(n, q);
-            lambdad = 1.0/9.0/M_PI/sqrt(p*d)*(((1.0 - x2)*(2.0*x2 +  \
-                    x1 - 3.0) - 3.0*x3*(x2 - 2.0))*Kk + 4.0*p*d*(d*d +  \
-                    7.0*p*p - 4.0)*Ek - 3.0*x3/x1*Pk);
-            if(d < p) lambdad += 2.0/3.0;
-            etad = 1.0/2.0/M_PI*(kap1 + p*p*(p*p + 2.0*d*d)*kap0 -  \
-                (1.0 + 5.0*p*p + d*d)/4.0*sqrt((1.0 - x1)*(x2 - 1.0)));
+            lambdad = 1.0/9.0/M_PI/sqrt(p0*d)*(((1.0 - x2)*(2.0*x2 +  \
+                    x1 - 3.0) - 3.0*x3*(x2 - 2.0))*Kk + 4.0*p0*d*(d*d +  \
+                    7.0*p0*p0 - 4.0)*Ek - 3.0*x3/x1*Pk);
+            if(d < p0) lambdad += 2.0/3.0;
+            etad = 1.0/2.0/M_PI*(kap1 + p0*p0*(p0*p0 + 2.0*d*d)*kap0 -  \
+                (1.0 + 5.0*p0*p0 + d*d)/4.0*sqrt((1.0 - x1)*(x2 - 1.0)));
             f_array[i] = 1.0 - ((1.0 - c1 - 2.0*c2)*lambdae + (c1 + 2.0*c2)*lambdad + c2*etad)/omega;
             continue;
         }
         //occulting star transits the source:
-        if(p <= 1.0  && d <= (1.0 - p))
+        if(p0 <= 1.0  && d <= (1.0 - p0))
         {
-            etad = p*p/2.0*(p*p + 2.0*d*d);
-            lambdae = p*p;
+            etad = p0*p0/2.0*(p0*p0 + 2.0*d*d);
+            lambdae = p1*p1;
 
             //printf("zone 4.1\n");
             double q = sqrt((x2 - x1)/(1.0 - x1));
@@ -225,16 +226,16 @@ static PyObject *_quadratic_ld(PyObject *self, PyObject *args)
             double n = x2/x1 - 1.0;
             double Pk = ellpic_bulirsch(n, q);
 
-            lambdad = 2.0/9.0/M_PI/sqrt(1.0 - x1)*((1.0 - 5.0*d*d + p*p +  \
-                     x3*x3)*Kk + (1.0 - x1)*(d*d + 7.0*p*p - 4.0)*Ek - 3.0*x3/x1*Pk);
+            lambdad = 2.0/9.0/M_PI/sqrt(1.0 - x1)*((1.0 - 5.0*d*d + p1*p1 +  \
+                     x3*x3)*Kk + (1.0 - x1)*(d*d + 7.0*p0*p0 - 4.0)*Ek - 3.0*x3/x1*Pk);
 
             // edge of planet hits edge of star
-            if(fabs(p + d - 1.0) <= tol)
+            if(fabs(p0 + d - 1.0) <= tol)
             {
-                lambdad = 2.0/3.0/M_PI*acos(1.0 - 2.0*p) - 4.0/9.0/M_PI* \
-                            sqrt(p*(1.0 - p))*(3.0 + 2.0*p - 8.0*p*p);
+                lambdad = 2.0/3.0/M_PI*acos(1.0 - 2.0*p0) - 4.0/9.0/M_PI* \
+                            sqrt(p0*(1.0 - p0))*(3.0 + 2.0*p0 - 8.0*p0*p0);
             }
-            if(d < p) lambdad += 2.0/3.0;
+            if(d < p0) lambdad += 2.0/3.0;
         }
         f_array[i] = 1.0 - ((1.0 - c1 - 2.0*c2)*lambdae + (c1 + 2.0*c2)*lambdad + c2*etad)/omega;
     }

@@ -37,12 +37,12 @@
 static PyObject *_uniform_ld(PyObject *self, PyObject *args)
 {
 	int nthreads;
-	double p;
+	double p0, p1;
 
 	PyArrayObject *ds, *flux;
 	npy_intp dims[1];
 	
-  	if(!PyArg_ParseTuple(args, "Odi", &ds, &p, &nthreads)) return NULL;		//parses function input
+  	if(!PyArg_ParseTuple(args, "Oddi", &ds, &p0, &p1, &nthreads)) return NULL;		//parses function input
 
 	dims[0] = PyArray_DIMS(ds)[0]; 
 	flux = (PyArrayObject *) PyArray_SimpleNew(1, dims, PyArray_TYPE(ds));	//creates numpy array to store return flux values
@@ -50,7 +50,7 @@ static PyObject *_uniform_ld(PyObject *self, PyObject *args)
 	double *f_array = PyArray_DATA(flux);
 	double *d_array = PyArray_DATA(ds);
 
-	if(fabs(p - 0.5) < 1.e-3) p = 0.5;
+	if(fabs(p1 - 0.5) < 1.e-3) p1 = 0.5;
 
 	#if defined (_OPENMP) && !defined(_OPENACC)
 	omp_set_num_threads(nthreads);	//specifies number of threads (if OpenMP is supported)
@@ -65,14 +65,17 @@ static PyObject *_uniform_ld(PyObject *self, PyObject *args)
 	{
 		double d = d_array[i]; 				// separation of centers
 		
-		if(d >= 1. + p) f_array[i] = 1.;		//no overlap
-		if(p >= 1. && d <= p - 1.) f_array[i] = 0.;	//total eclipse of the star
-		else if(d <= 1. - p) f_array[i] = 1. - p*p;	//planet is fully in transit
+		if(d >= 1. + p0) f_array[i] = 1.;		//no overlap
+		if(p0 >= 1. && d <= p0 - 1.) f_array[i] = 0.;	//total eclipse of the star
+		else if(d <= 1. - p0) f_array[i] = 1. - p1*p1;	//planet is fully in transit
 		else						//planet is crossing the limb
 		{
-			double kap1=acos(fmin((1. - p*p + d*d)/2./d, 1.));
-			double kap0=acos(fmin((p*p + d*d - 1.)/2./p/d, 1.));
-			f_array[i] = 1. - (p*p*kap0 + kap1 - 0.5*sqrt(fmax(4.*d*d - pow(1. + d*d - p*p, 2.), 0.)))/M_PI;
+//			double kap1=acos(fmin((1. - p0*p0 + d*d)/2./d, 1.));
+//			double kap0=acos(fmin((p0*p0 + d*d - 1.)/2./p0/d, 1.));
+//            f_array[i] = 1. - (p0*p0*kap0 + kap1 - 0.5*sqrt(fmax(4.*d*d - pow(1. + d*d - p0*p0, 2.), 0.)))/M_PI;
+			double kap1=acos(fmin((1. - p0*p0 + d*d)/2./d, 1.));
+			double kap0=acos(fmin((p0*p0 + d*d - 1.)/2./p0/d, 1.));
+            f_array[i] = 1. - (p0*p0*kap0 + kap1 - 0.5*sqrt(fmax(4.*d*d - pow(1. + d*d - p0*p0, 2.), 0.)))/M_PI * (p1*p1/p0/p0);
 		}
 	}
 
