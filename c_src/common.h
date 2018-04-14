@@ -36,21 +36,36 @@
 /* Must be defined in the C file that includes this header. */
 inline double intensity(double x, double* args);
 
-inline double area(double d, double x, double R)
+//inline double area(double d, double x, double R)
+//{
+//	/*
+//	Returns area of overlapping circles with radii x and R; separated by a distance d
+//	*/
+//	double arg1 = (d*d + x*x - R*R)/(2.*d*x);
+//	double arg2 = (d*d + R*R - x*x)/(2.*d*R);
+//	double arg3 = MAX((-d + x + R)*(d + x - R)*(d - x + R)*(d + x + R), 0.);
+//
+//	if(x <= R - d) return M_PI*x*x;							//planet completely overlaps stellar circle
+//	else if(x >= R + d) return M_PI*R*R;						//stellar circle completely overlaps planet
+//	else return x*x*acos(arg1) + R*R*acos(arg2) - 0.5*sqrt(arg3);			//partial overlap
+//}
+
+inline double area(double d, double x, double R0, double R1)
 {
 	/*
 	Returns area of overlapping circles with radii x and R; separated by a distance d
 	*/
-	double arg1 = (d*d + x*x - R*R)/(2.*d*x);
-	double arg2 = (d*d + R*R - x*x)/(2.*d*R);
-	double arg3 = MAX((-d + x + R)*(d + x - R)*(d - x + R)*(d + x + R), 0.);
+	double arg1 = (d*d + x*x - R0*R0)/(2.*d*x);
+	double arg2 = (d*d + R0*R0 - x*x)/(2.*d*R0);
+	double arg3 = MAX((-d + x + R0)*(d + x - R0)*(d - x + R0)*(d + x + R0), 0.);
 
-	if(x <= R - d) return M_PI*x*x;							//planet completely overlaps stellar circle
-	else if(x >= R + d) return M_PI*R*R;						//stellar circle completely overlaps planet
-	else return x*x*acos(arg1) + R*R*acos(arg2) - 0.5*sqrt(arg3);			//partial overlap
+	if(x <= R0 - d) return (R1*R1/R0/R0) * M_PI*x*x;							//planet completely overlaps stellar circle
+	else if(x >= R0 + d) return M_PI*R1*R1;						//stellar circle completely overlaps planet
+	else return (R1*R1/R0/R0) * (x*x*acos(arg1) + R0*R0*acos(arg2) - 0.5*sqrt(arg3));			//partial overlap
 }
 
-void calc_limb_darkening(double* f_array, double* d_array, int N, double rprs, double fac, int nthreads, double* intensity_args)
+
+void calc_limb_darkening(double* f_array, double* d_array, int N, double p0, double p1, double fac, int nthreads, double* intensity_args)
 {
 	/*
 		This function takes an array of sky distances (d_array) of length N, computes stellar intensity by calling intensity with
@@ -73,8 +88,8 @@ void calc_limb_darkening(double* f_array, double* d_array, int N, double rprs, d
 	for(int i = 0; i < N; i++)
 	{
 		double d = d_array[i];
-		double x_in = MAX(d - rprs, 0.);					//lower bound for integration
-		double x_out = MIN(d + rprs, 1.0);					//upper bound for integration
+		double x_in = MAX(d - p0, 0.);					//lower bound for integration
+		double x_out = MIN(d + p0, 1.0);					//upper bound for integration
 
 		if(x_in >= 1.) f_array[i] = 1.0;					//flux = 1. if the planet is not transiting
 		else if(x_out - x_in < 1.e-7) f_array[i] = 1.0;				//pathological case	
@@ -90,7 +105,7 @@ void calc_limb_darkening(double* f_array, double* d_array, int N, double rprs, d
 
 			while(x < x_out)
 			{
-				double A_f = area(d, x, rprs);				//calculates area of overlapping circles
+				double A_f = area(d, x, p0, p1);				//calculates area of overlapping circles
 				double I = intensity(x - dx/2., intensity_args); 	//intensity at the midpoint
 				delta += (A_f - A_i)*I;				//increase in transit depth for this integration step
 				dx = fac*acos(x);  				//updating step size
@@ -99,7 +114,7 @@ void calc_limb_darkening(double* f_array, double* d_array, int N, double rprs, d
 			}
 			dx = x_out - x + dx;  					//calculating change in radius for last step  FIXME
 			x = x_out;						//final radius for integration
-			double A_f = area(d, x, rprs);					//area for last integration step
+			double A_f = area(d, x, p0, p1);					//area for last integration step
 			double I = intensity(x - dx/2., intensity_args); 		//intensity at the midpoint
 			delta += (A_f - A_i)*I;					//increase in transit depth for this integration step
 

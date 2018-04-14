@@ -94,8 +94,8 @@ class TransitModel(object):
 		self.t = t
 		self.t0 = params.t0
 		self.per = params.per
-		self.rp0 = params.rp0
-		self.rp1 = params.rp1
+		self.rp0 = params.rp0 if params.rp is None else params.rp
+		self.rp1 = params.rp1 if params.rp is None else params.rp
 		self.a = params.a
 		self.inc = params.inc
 		self.ecc = params.ecc
@@ -110,10 +110,10 @@ class TransitModel(object):
 		self.inverse = False
 
 		#handles the case of inverse transits (rp < 0)
-		if self.rp0 < 0.:
-			self.rp0 = -1. * self.rp0
-			params.rp0 = -1.*params.rp0
-			self.inverse = True
+		# if self.rp0 < 0.:
+		# 	self.rp0 = -1. * self.rp0
+		# 	params.rp0 = -1.*params.rp0
+		# 	self.inverse = True
 
 		if self.supersample_factor > 1:  # IJMC: now do it quicker, with no loops:
 			t_offsets = np.linspace(-self.exp_time/2., self.exp_time/2., self.supersample_factor)
@@ -162,8 +162,8 @@ class TransitModel(object):
 				f0 = _exponential_ld._exponential_ld(ds, self.rp0, self.u[0], self.u[1], fac_lo, self.nthreads)
 				f = _exponential_ld._exponential_ld(ds, self.rp0, self.u[0], self.u[1], self.fac, self.nthreads)
 			elif self.limb_dark == "logarithmic":
-				f0 = _logarithmic_ld._logarithmic_ld(ds, self.rp0, self.u[0], self.u[1], fac_lo, self.nthreads)
-				f = _logarithmic_ld._logarithmic_ld(ds, self.rp0, self.u[0], self.u[1], self.fac, self.nthreads)
+				f0 = _logarithmic_ld._logarithmic_ld(ds, self.rp0, self.rp1, self.u[0], self.u[1], fac_lo, self.nthreads)
+				f = _logarithmic_ld._logarithmic_ld(ds, self.rp0, self.rp1, self.u[0], self.u[1], self.fac, self.nthreads)
 			elif self.limb_dark == "power2":
 				f0 = _power2_ld._power2_ld(ds, self.rp0, self.u[0], self.u[1], fac_lo, self.nthreads)
 				f = _power2_ld._power2_ld(ds, self.rp0, self.u[0], self.u[1], self.fac, self.nthreads)
@@ -187,10 +187,10 @@ class TransitModel(object):
 			nthreads = 1
 			fac_lo, fac_hi = 5.0e-4, 1.
 			ds = np.linspace(0., 1. + self.rp0, 1000)
-			if self.limb_dark == "nonlinear": f0 = _nonlinear_ld._nonlinear_ld(ds, self.rp0, self.u[0], self.u[1], self.u[2], self.u[3], fac_lo, nthreads)
-			elif self.limb_dark == "squareroot": f0 = _nonlinear_ld._nonlinear_ld(ds, self.rp0, self.u[1], self.u[0], 0., 0., fac_lo, nthreads)
+			if self.limb_dark == "nonlinear": f0 = _nonlinear_ld._nonlinear_ld(ds, self.rp0, self.rp1, self.u[0], self.u[1], self.u[2], self.u[3], fac_lo, nthreads)
+			elif self.limb_dark == "squareroot": f0 = _nonlinear_ld._nonlinear_ld(ds, self.rp0, self.rp1, self.u[1], self.u[0], 0., 0., fac_lo, nthreads)
 			elif self.limb_dark == "exponential": f0 = _exponential_ld._exponential_ld(ds, self.rp0, self.u[0], self.u[1], fac_lo, nthreads)
-			elif self.limb_dark == "logarithmic": f0 = _logarithmic_ld._logarithmic_ld(ds, self.rp0, self.u[0], self.u[1], fac_lo, nthreads)
+			elif self.limb_dark == "logarithmic": f0 = _logarithmic_ld._logarithmic_ld(ds, self.rp0, self.rp1, self.u[0], self.u[1], fac_lo, nthreads)
 			elif self.limb_dark == "power2": f0 = _power2_ld._power2_ld(ds, self.rp0, self.u[0], self.u[1], fac_lo, nthreads)
 			else: f0 = _custom_ld._custom_ld(ds, self.rp0, self.u[0], self.u[1], self.u[2], self.u[3], self.u[4], self.u[5], fac_lo, nthreads)
 
@@ -198,10 +198,10 @@ class TransitModel(object):
 			err = 0.
 			while(err > self.max_err or err < 0.99*self.max_err):
 				fac = (fac_lo + fac_hi)/2.
-				if self.limb_dark == "nonlinear": f = _nonlinear_ld._nonlinear_ld(ds, self.rp0, self.u[0], self.u[1], self.u[2], self.u[3], fac, nthreads)
-				elif self.limb_dark == "squareroot": f = _nonlinear_ld._nonlinear_ld(ds, self.rp0, self.u[1], self.u[0], 0., 0., fac, nthreads)
+				if self.limb_dark == "nonlinear": f = _nonlinear_ld._nonlinear_ld(ds, self.rp0, self.rp1, self.u[0], self.u[1], self.u[2], self.u[3], fac, nthreads)
+				elif self.limb_dark == "squareroot": f = _nonlinear_ld._nonlinear_ld(ds, self.rp0, self.rp1, self.u[1], self.u[0], 0., 0., fac, nthreads)
 				elif self.limb_dark == "exponential": f = _exponential_ld._exponential_ld(ds, self.rp0, self.u[0], self.u[1], fac, nthreads)
-				elif self.limb_dark == "logarithmic": f = _logarithmic_ld._logarithmic_ld(ds, self.rp0, self.u[0], self.u[1], fac, nthreads)
+				elif self.limb_dark == "logarithmic": f = _logarithmic_ld._logarithmic_ld(ds, self.rp0, self.rp1, self.u[0], self.u[1], fac, nthreads)
 				elif self.limb_dark == "power2": f = _power2_ld._power2_ld(ds, self.rp0, self.u[0], self.u[1], fac, nthreads)
 				else: f = _custom_ld._custom_ld(ds, self.rp0, self.u[0], self.u[1], self.u[2], self.u[3], self.u[4], self.u[5], fac, nthreads)
 
@@ -238,8 +238,8 @@ class TransitModel(object):
 		#updates transit params
 		self.t0 = params.t0
 		self.per = params.per
-		self.rp0 = params.rp0
-		self.rp1 = params.rp1
+		self.rp0 = params.rp0 if (params.rp0 is not None) else params.rp
+		self.rp1 = params.rp1 if (params.rp1 is not None) else params.rp
 		self.a = params.a
 		self.inc = params.inc
 		self.ecc = params.ecc
@@ -250,23 +250,18 @@ class TransitModel(object):
 		self.t_secondary = params.t_secondary
 		self.inverse = False
 
-		#handles the case of inverse transits (rp < 0)
-		if self.rp0 < 0.:
-			self.rp0 = -1. * self.rp0
-			params.rp = -1.*params.rp
-			self.inverse = True
-		
+		# #handles the case of inverse transits (rp < 0)
+		# if self.rp0 < 0.:
+		# 	self.rp0 = -1. * self.rp0
+		# 	params.rp = -1.*params.rp
+		# 	self.inverse = True
+
 		if self.transittype == 1:
 			if params.limb_dark != self.limb_dark: raise Exception("Need to reinitialize model in order to change limb darkening option")
-			if self.limb_dark == "quadratic": lc = _quadratic_ld._quadratic_ld(self.ds, params.rp0, params.rp1, params.u[0], params.u[1], self.nthreads)
-			elif self.limb_dark == "linear": lc = _quadratic_ld._quadratic_ld(self.ds, params.rp, params.u[0], 0., self.nthreads)
-			elif self.limb_dark == "nonlinear": lc = _nonlinear_ld._nonlinear_ld(self.ds, params.rp, params.u[0], params.u[1], params.u[2], params.u[3], self.fac, self.nthreads)
-			elif self.limb_dark == "squareroot": lc = _nonlinear_ld._nonlinear_ld(self.ds, params.rp, params.u[1], params.u[0], 0., 0., self.fac, self.nthreads)
-			elif self.limb_dark == "uniform": lc = _uniform_ld._uniform_ld(self.ds, params.rp0, params.rp1, self.nthreads)
-			elif self.limb_dark == "logarithmic": lc = _logarithmic_ld._logarithmic_ld(self.ds, params.rp, params.u[0], params.u[1], self.fac, self.nthreads)
-			elif self.limb_dark == "exponential": lc = _exponential_ld._exponential_ld(self.ds, params.rp, params.u[0], params.u[1], self.fac, self.nthreads)
-			elif self.limb_dark == "power2": lc = _power2_ld._power2_ld(self.ds, params.rp, params.u[0], params.u[1], self.fac, self.nthreads)
-			elif self.limb_dark == "custom": lc = _custom_ld._custom_ld(self.ds, params.rp, params.u[0], params.u[1], params.u[2], params.u[3], params.u[4], params.u[5], self.fac, self.nthreads)
+			if self.limb_dark == "quadratic": lc = _quadratic_ld._quadratic_ld(self.ds, self.rp0, self.rp1, params.u[0], params.u[1], self.nthreads)
+			elif self.limb_dark == "linear": lc = _quadratic_ld._quadratic_ld(self.ds, self.rp0, self.rp1, params.u[0], 0., self.nthreads)
+			elif self.limb_dark == "nonlinear": lc = _nonlinear_ld._nonlinear_ld(self.ds, self.rp0, self.rp1, params.u[0], params.u[1], params.u[2], params.u[3], self.fac, self.nthreads)
+			elif self.limb_dark == "uniform": lc = _uniform_ld._uniform_ld(self.ds, self.rp0, self.rp1, self.nthreads)
 			else: raise Exception("Invalid limb darkening option")
 
 			if self.inverse == True: lc = 2. - lc
@@ -374,6 +369,7 @@ class TransitParams(object):
 	def __init__(self):
 		self.t0 = None
 		self.per = None
+		self.rp = None
 		self.rp0 = None
 		self.rp1 = None
 		self.a = None
