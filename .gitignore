@@ -11,7 +11,7 @@ build/*
 *.blg
 *.eps
 *.txt
-
+.idea
 dist
 MANIFEST
 robin_package.egg-info

@@ -7,14 +7,17 @@
 
    <br />
 
-robin: |br| Bad-Ass Transit Model cAlculatioN
-==============================================
+robin: |br| ROBust exoplanet radii from INgress/egress durations
+================================================================
 
-Welcome to the documentation for ``robin``, a Python package for fast calculation of exoplanet transit light curves.  The package supports calculation of light curves for any radially symmetric stellar limb darkening law, using a new integration algorithm for models that cannot be quickly calculated analytically.
+Welcome to the documentation for ``robin``, a Python package for fast calculation
+of exoplanet transit light curves.  The package supports calculation of light
+curves for any radially symmetric stellar limb darkening law, using the
+`batman integration algorithm <http://adsabs.harvard.edu/abs/2015PASP..127.1161K>`_
+for models that cannot be quickly calculated analytically.
 
-In typical use, ``robin`` can calculate a million model light curves in well under 10 minutes for any limb darkening profile.
-
-Please cite the `paper <http://adsabs.harvard.edu/abs/2015PASP..127.1161K>`_ if you make use of ``robin`` in your work!
+In typical use, ``robin`` can calculate a million model light curves in well
+under 10 minutes for any limb darkening profile.
 
 Contents:
 
