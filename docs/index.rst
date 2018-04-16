@@ -7,8 +7,8 @@
 
    <br />
 
-robin: |br| ROBust exoplanet radii from INgress/egress durations
-================================================================
+robin: ROBust exoplanet radii from INgress/egress durations
+===========================================================
 
 Welcome to the documentation for ``robin``, a Python package for fast calculation
 of exoplanet transit light curves.  The package supports calculation of light

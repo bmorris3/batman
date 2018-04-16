@@ -55,6 +55,6 @@ Voilà!  Here's a figure showing the light curves:
 
 .. image:: lc.png
 
-This code is available in full at https://github.com/lkreidberg/robin/tree/master/docs/quickstart.py.
+This code is available in full at https://github.com/bmorris3/robin/tree/master/docs/quickstart.py.
 
 
