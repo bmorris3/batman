@@ -5,8 +5,6 @@
 
 .. |br| raw:: html
 
-   <br />
-
 robin: ROBust exoplanet radii from INgress/egress durations
 ===========================================================
 
@@ -19,7 +17,8 @@ for models that cannot be quickly calculated analytically.
 In typical use, ``robin`` can calculate a million model light curves in well
 under 10 minutes for any limb darkening profile.
 
-Contents:
+Contents
+++++++++
 
 .. toctree::
    :maxdepth: 2
@@ -30,9 +29,3 @@ Contents:
    api
    trouble 
    acknowledgements
-
-Release Notes
--------------
-.. include::  ../changelog.rst
-
-
