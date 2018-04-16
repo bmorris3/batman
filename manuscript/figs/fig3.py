@@ -1,4 +1,4 @@
-# The batman package: fast computation of exoplanet transit light curves
+# The robin package: fast computation of exoplanet transit light curves
 # Copyright (C) 2015 Laura Kreidberg	 
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import timeit
-import batman
+import robin
 from pylab import *
 
 def wrapper(func, *args, **kwargs):
@@ -31,7 +31,7 @@ rc('font',**{'family':'sans-serif','sans-serif':['Arial']})
 matplotlib.rcParams.update({'font.size':11})
 plt.figure(figsize=(4,4))
 
-params = batman.TransitParams()	        #object to store transit parameters
+params = robin.TransitParams()	        #object to store transit parameters
 params.t0 = 0. 				#time of periastron passage (for eccentric orbits), OR
 					#mid-transit time (for circular orbits)
 params.per = 1.58			#orbital period	
@@ -45,7 +45,7 @@ t = np.linspace(-0.013, 0.013, 100)  	#times at which to calculate light curve
 
 params.limb_dark = "quadratic"          #limb darkening model
 params.u = [0.1, 0.3]       	#limb darkening coefficients
-m = batman.TransitModel(params, t)      #initializes model
+m = robin.TransitModel(params, t)      #initializes model
 f1 = m.light_curve(params)
 wrapped = wrapper(m.light_curve, params)
 time = timeit.timeit(wrapped,number=100)/100.
@@ -56,7 +56,7 @@ print("quadratic", time)
 
 params.limb_dark = "nonlinear"          #limb darkening model
 params.u = [0.0, 0.7, 0.0, -0.3]       	#limb darkening coefficients
-m = batman.TransitModel(params, t)      #initializes model
+m = robin.TransitModel(params, t)      #initializes model
 flux = m.light_curve(params)		#calculates light curve
 
 #generates Figure 3: max err as a function of function call time

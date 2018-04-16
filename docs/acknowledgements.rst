@@ -2,7 +2,7 @@
 
 Acknowledgements
 =================
-Many thanks to the following individuals for their support in the development of ``batman``:
+Many thanks to the following individuals for their support in the development of ``robin``:
 
 - Jacob Bean
 - Kevin Stevenson

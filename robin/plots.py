@@ -1,4 +1,4 @@
-# The batman package: fast computation of exoplanet transit light curves
+# The robin package: fast computation of exoplanet transit light curves
 # Copyright (C) 2015 Laura Kreidberg	 
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ from .transitmodel import *
 from . import _quadratic_ld
 from . import _nonlinear_ld
 import timeit
-import batman
+import robin
 
 __all__ = ['make_plots']
 

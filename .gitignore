@@ -14,4 +14,4 @@ build/*
 
 dist
 MANIFEST
-batman_package.egg-info
+robin_package.egg-info

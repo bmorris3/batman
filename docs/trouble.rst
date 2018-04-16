@@ -3,12 +3,12 @@
 Troubleshooting
 ===============
 
-Help! ``batman`` is running really slowly - why is this?
+Help! ``robin`` is running really slowly - why is this?
 --------------------------------------------------------
-My first guess is that you're reinitializing the model many times. This is by far the slowest component of ``batman``, because it calculates the optimal step size for the integration starting from a very small value. To speed this up, you can manually set the scale factor for the step size. First check what the optimal step size factor is after you initalize a model with realistic transit parameters:
+My first guess is that you're reinitializing the model many times. This is by far the slowest component of ``robin``, because it calculates the optimal step size for the integration starting from a very small value. To speed this up, you can manually set the scale factor for the step size. First check what the optimal step size factor is after you initalize a model with realistic transit parameters:
 
 ::
-	m = batman.TransitModel(params, t)
+	m = robin.TransitModel(params, t)
 
 	fac = m.fac
 	print("stepsize:", fac)
@@ -18,7 +18,7 @@ My first guess is that you're reinitializing the model many times. This is by fa
 Then, you can use set this step size as the default, like so:
 
 ::
-	m = batman.TransitModel(params, t, fac = fac) 
+	m = robin.TransitModel(params, t, fac = fac)
 
 This will save A LOT of time! The optimal step size will vary slightly depending on the limb darkening and the planet radius, so I would recommend choosing a conservative value for the error tolerance to account for this. 
 

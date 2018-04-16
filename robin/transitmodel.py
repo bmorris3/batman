@@ -1,4 +1,4 @@
-# The batman package: fast computation of exoplanet transit light curves
+# The robin package: fast computation of exoplanet transit light curves
 # Copyright (C) 2015 Laura Kreidberg	 
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -66,7 +66,7 @@ class TransitModel(object):
 
 	:Example:
 	
-	>>> m = batman.TransitModel(params, max_err = 0.5, nthreads=4)
+	>>> m = robin.TransitModel(params, max_err = 0.5, nthreads=4)
 	"""
 
 	def __init__(self, params, t, max_err=1.0, nthreads = 1, fac = None, transittype = "primary", supersample_factor = 1, exp_time = 0.):
@@ -354,8 +354,8 @@ class TransitParams(object):
 
 	:Example:
 	
-	>>> import batman
-	>>> params = batman.TransitParams()
+	>>> import robin
+	>>> params = robin.TransitParams()
 	>>> params.t0 = 0. 				#time of inferior conjunction
 	>>> params.per = 1.				#orbital period	
 	>>> params.rp = 0.1				#planet radius (in units of stellar radii)

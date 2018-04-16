@@ -1,4 +1,4 @@
-# The batman package: fast computation of exoplanet transit light curves
+# The robin package: fast computation of exoplanet transit light curves
 # Copyright (C) 2015 Laura Kreidberg	 
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import batman
+import robin
 import numpy as np
 import matplotlib.pyplot as plt
 from pylab import *
@@ -24,7 +24,7 @@ from matplotlib import rc
 rc('font',**{'family':'sans-serif','sans-serif':['Arial']})
 matplotlib.rcParams.update({'font.size':14})
 
-params = batman.TransitParams()
+params = robin.TransitParams()
 params.t0 = 0. 				#time of inferior conjunction 
 params.per = 1.				#orbital period	
 params.rp = 0.1				#planet radius (in units of stellar radii)
@@ -36,7 +36,7 @@ params.u = [0.1, 0.3] 	      	        #limb darkening coefficients
 params.limb_dark = "quadratic"          #limb darkening model
    
 t = np.linspace(-0.025, 0.025, 1000)    	#times at which to calculate light curve	
-m = batman.TransitModel(params, t)	        #initializes model
+m = robin.TransitModel(params, t)	        #initializes model
 flux = m.light_curve(params)
 
 plt.plot(t, flux)

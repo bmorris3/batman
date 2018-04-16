@@ -2,11 +2,11 @@
 
 API
 ===
-.. module:: batman
+.. module:: robin
 
-.. autoclass:: batman.TransitParams
+.. autoclass:: robin.TransitParams
    :inherited-members:
 
-.. autoclass:: batman.TransitModel
+.. autoclass:: robin.TransitModel
    :inherited-members:
 

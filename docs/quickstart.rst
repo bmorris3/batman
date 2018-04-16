@@ -2,13 +2,13 @@
 
 Quickstart
 ============
-If you're in a hurry to model some awesome transits, you're on the right page.  Here's an example of basic ``batman`` usage to calculate a model light curve with quadratic limb darkening.  (For more detailed examples, check out the :ref:`tutorial`.)
+If you're in a hurry to model some awesome transits, you're on the right page.  Here's an example of basic ``robin`` usage to calculate a model light curve with quadratic limb darkening.  (For more detailed examples, check out the :ref:`tutorial`.)
 
-First, we import ``batman`` and a few of the usual packages:
+First, we import ``robin`` and a few of the usual packages:
 
 ::
 
-	import batman	
+	import robin
 	import numpy as np
 	import matplotlib.pyplot as plt
 
@@ -16,7 +16,7 @@ Next we create a ``TransitParams`` object to store the physical parameters descr
 
 ::
 
-	params = batman.TransitParams()
+	params = robin.TransitParams()
 	params.t0 = 0. 			     #time of inferior conjunction 
 	params.per = 1.			     #orbital period	
 	params.rp = 0.1			     #planet radius (in units of stellar radii)
@@ -27,7 +27,7 @@ Next we create a ``TransitParams`` object to store the physical parameters descr
 	params.u = [0.1, 0.3]  	             #limb darkening coefficients [u1, u2]
 	params.limb_dark = "quadratic"       #limb darkening model
 
-Note that for circular orbits, ``batman`` uses the convention ``params.w = 90``.  The units for ``params.t0`` and ``params.per`` can be anything as long as they are consistent.
+Note that for circular orbits, ``robin`` uses the convention ``params.w = 90``.  The units for ``params.t0`` and ``params.per`` can be anything as long as they are consistent.
 
 We also need to specify the times at which we wish to calculate the model:
 
@@ -39,7 +39,7 @@ Using these parameters, we initialize the model and calculate a model light curv
 
 ::
 
-	m = batman.TransitModel(params, t)    #initializes model
+	m = robin.TransitModel(params, t)    #initializes model
 	flux = m.light_curve(params)	      #calculates light curve
 
 
@@ -55,6 +55,6 @@ Voilà!  Here's a figure showing the light curves:
 
 .. image:: lc.png
 
-This code is available in full at https://github.com/lkreidberg/batman/tree/master/docs/quickstart.py.
+This code is available in full at https://github.com/lkreidberg/robin/tree/master/docs/quickstart.py.
 
 

@@ -4,10 +4,10 @@ To enable OpenACC on NVIDIA GPUs, we recommend these steps:
 
 1. Install the latest version of CUDA (https://developer.nvidia.com/cuda-downloads)
 2. Install the PGI compiler (http://www.pgroup.com/products/community.htm)
-3. Install batman with:
+3. Install robin with:
 
 LDSHARED="pgcc" LDFLAGS="-noswitcherror -O3 -shared -L/opt/pgi/linux86-64/16.10/lib -laccapimp -laccgmp -laccnmp -laccg2mp -ldl -lcudadevice -lpgmp -lnuma -lpthread -lnspgc -lpgc" CC=pgcc CFLAGS="-noswitcherror -O3 -acc -ta=nvidia:nordc -Minfo=accel -mp" python setup.py install
 
 In step 3, replace /opt/pgi with your PGI installation directory, and 16.10 with your version.
 
-4. Run unit tests: python -c "import batman; batman.test()" 
+4. Run unit tests: python -c "import robin; robin.test()"

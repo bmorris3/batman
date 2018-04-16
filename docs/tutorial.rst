@@ -2,17 +2,17 @@
 
 Tutorial
 ============
-In this tutorial, we'll go through ``batman``'s functionality in more detail than in the :ref:`quickstart`.  First let's initialize a model with nonlinear limb darkening:
+In this tutorial, we'll go through ``robin``'s functionality in more detail than in the :ref:`quickstart`.  First let's initialize a model with nonlinear limb darkening:
 
 Initializing the model
 ----------------------
 ::
 
-	import batman
+	import robin
 	import numpy as np
 	import matplotlib as plt
 
-	params = batman.TransitParams()	      #object to store transit parameters
+	params = robin.TransitParams()	      #object to store transit parameters
 	params.t0 = 0. 			      #time of inferior conjunction 
 	params.per = 1.			      #orbital period	
 	params.rp = 0.1			      #planet radius (in units of stellar radii)
@@ -24,7 +24,7 @@ Initializing the model
    	params.u = [0.5, 0.1, 0.1, -0.1]      #limb darkening coefficients [u1, u2, u3, u4]
 	   
 	t = np.linspace(-0.025, 0.025, 1000)  #times at which to calculate light curve	
-	m = batman.TransitModel(params, t)    #initializes model
+	m = robin.TransitModel(params, t)    #initializes model
 
 The initialization step calculates the separation of centers between the star and the planet, as well as the integration step size (for "square-root", "logarithmic", "exponential", "nonlinear", "power2", and "custom" limb darkening). 
 
@@ -51,7 +51,7 @@ Now that the model has been set up, we can change the transit parameters and rec
 
 Limb darkening options
 ----------------------
-The ``batman`` package currently supports the following pre-defined limb darkening options: "uniform", "linear", "quadratic", "square-root", "logarithmic", "exponential", "power2" (from Morello et al. 2017), and "nonlinear".  These options assume the following form for the stellar intensity profile:
+The ``robin`` package currently supports the following pre-defined limb darkening options: "uniform", "linear", "quadratic", "square-root", "logarithmic", "exponential", "power2" (from Morello et al. 2017), and "nonlinear".  These options assume the following form for the stellar intensity profile:
 
 .. math::
 
@@ -81,7 +81,7 @@ To illustrate the usage for these different options, here's a calculation of lig
 	for i in range(4):
 		params.limb_dark = ld_options[i]          #specifies the LD profile
 		params.u = ld_coefficients[i]	          #updates LD coefficients
-		m = batman.TransitModel(params, t)	  #initializes the model
+		m = robin.TransitModel(params, t)	  #initializes the model
 		flux = m.light_curve(params)		  #calculates light curve
 		plt.plot(t, flux, label = ld_options[i])
 
@@ -92,9 +92,9 @@ The limb darkening coefficients are provided as a list of the form :math:`[c_1, 
 
 Custom limb darkening
 ---------------------
-``batman`` also supports the definition of custom limb darkening.  To create a custom limb darkening law, you'll have to write a very wee bit of C code and perform a new installation of ``batman``. 
+``robin`` also supports the definition of custom limb darkening.  To create a custom limb darkening law, you'll have to write a very wee bit of C code and perform a new installation of ``robin``.
 
-First, download the package from source at https://pypi.python.org/pypi/batman-package/.  Unpack the files and ``cd`` to the root directory.
+First, download the package from source at https://pypi.python.org/pypi/robin-package/.  Unpack the files and ``cd`` to the root directory.
 
 To define your stellar intensity profile, edit the ``intensity`` function in the file ``c_src/_custom_intensity.c``.  This function returns the intensity at a given radial value, :math:`I(x)`.  Its arguments are :math:`x` (the normalized radial coordinate; :math:`0\le x \le 1`) and six limb darkening coefficients, :math:`c_1, ..., c_6`. 
 
@@ -120,13 +120,13 @@ This function can be replaced with another of your choosing, so long as it satis
 	if(x > 0.99995) x = 0.99995;
 
 
-To re-install ``batman`` with your custom limb darkening law, run the setup script:
+To re-install ``robin`` with your custom limb darkening law, run the setup script:
 
 ::
 
 	$ sudo python setup.py install
 
-You'll have to ``cd`` out of the source root directory to successfully import ``batman``.  Now, to calculate a model light curve with your custom limb darkening profile, use:
+You'll have to ``cd`` out of the source root directory to successfully import ``robin``.  Now, to calculate a model light curve with your custom limb darkening profile, use:
 
 ::
 
@@ -144,7 +144,7 @@ For models calculated with numeric integration ("square-root", "logarithmic", "e
 
 ::
 
-  m = batman.TransitModel(params, t, max_err = 0.5)
+  m = robin.TransitModel(params, t, max_err = 0.5)
 
 This initializes a model with a step size tuned to yield a maximum truncation error of 0.5 ppm.  The default ``max_err`` is 1 ppm, but you may wish to adjust it depending on the combination of speed/accuracy you require.  Changing the value of ``max_err`` will not impact the output for the analytic models ("quadratic", "linear", and "uniform").
 
@@ -162,14 +162,14 @@ If you prefer not to calculate the step size automatically, it can be set explic
 
 Parallelization
 ---------------
-The default behavior for ``batman`` is no parallelization.  If you want to speed up the calculation, you can parallelize it by setting the
+The default behavior for ``robin`` is no parallelization.  If you want to speed up the calculation, you can parallelize it by setting the
 ``nthreads`` parameter.  For example, to use 4 processors you would initialize a model with:
 
 ::
 
-	m = batman.TransitModel(params, t, nthreads = 4)
+	m = robin.TransitModel(params, t, nthreads = 4)
 
-The parallelization is done at the C level with OpenMP.  If your default C compiler does not support OpenMP, ``batman`` will raise an exception if you specify ``nthreads``>1. 
+The parallelization is done at the C level with OpenMP.  If your default C compiler does not support OpenMP, ``robin`` will raise an exception if you specify ``nthreads``>1.
 
 
 .. note::
@@ -179,7 +179,7 @@ The parallelization is done at the C level with OpenMP.  If your default C compi
 
 Modeling eclipses
 -----------------
-``batman`` can also model eclipses (secondary transits). To do this, specify the planet-to-star flux ratio and the central eclipse time:
+``robin`` can also model eclipses (secondary transits). To do this, specify the planet-to-star flux ratio and the central eclipse time:
 
 ::
 	
@@ -192,7 +192,7 @@ and initialize a model with the ``transittype`` parameter set to ``"secondary"``
 ::
 	
 	t = np.linspace(0.48, 0.52, 1000)
-	m = batman.TransitModel(params, t, transittype="secondary")	       
+	m = robin.TransitModel(params, t, transittype="secondary")
 	flux = m.light_curve(params)
 	plt.plot(t, flux)
 
@@ -201,9 +201,9 @@ and initialize a model with the ``transittype`` parameter set to ``"secondary"``
 The eclipse light curve is normalized such that the flux of the star is unity. The eclipse depth is :math:`f_p`. 
 The model assumes that the eclipse center occurs when the true anomaly equals :math:`3\pi/2 - \omega`. 
 
-For convenience, `batman` includes utilities to calculate the time of secondary eclipse from the time of inferior conjunction, and vice versa. See the ``get_t_secondary`` and ``get_t_conjunction`` methods in the API.
+For convenience, `robin` includes utilities to calculate the time of secondary eclipse from the time of inferior conjunction, and vice versa. See the ``get_t_secondary`` and ``get_t_conjunction`` methods in the API.
 
-.. warning:: Note that the secondary eclipse calculation does NOT account for the light travel time in the system (which is of order minutes). Future versions of ``batman`` may include this feature, but for now you're on your own!
+.. warning:: Note that the secondary eclipse calculation does NOT account for the light travel time in the system (which is of order minutes). Future versions of ``robin`` may include this feature, but for now you're on your own!
 
 
 Supersampling
@@ -212,7 +212,7 @@ For long exposure times, you may wish to calculate the average value of the ligh
 
 ::
 
-	m = batman.TransitModel(params, t, supersample_factor = 7, exp_time = 0.001)
+	m = robin.TransitModel(params, t, supersample_factor = 7, exp_time = 0.001)
 
 This example will return the average value of the light curve calculated from 7 evenly spaced samples over the duration of each 0.001-day exposure.  The ``exp_time`` parameter must have the same units as the array of observation times ``t``.
 

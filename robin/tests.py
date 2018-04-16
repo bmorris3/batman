@@ -1,4 +1,4 @@
-# The batman package: fast computation of exoplanet transit light curves
+# The robin package: fast computation of exoplanet transit light curves
 # Copyright (C) 2015 Laura Kreidberg	 
 # 
 # This program is free software: you can redistribute it and/or modify

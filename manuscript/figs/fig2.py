@@ -1,16 +1,16 @@
-import batman
+import robin
 import numpy as np
 import matplotlib.pyplot as plt
 from pylab import *
 from matplotlib import rc
 import matplotlib.gridspec as gridspec
 
-print(batman.__file__)
+print(robin.__file__)
 
 rc('font',**{'family':'sans-serif','sans-serif':['Arial']})
 matplotlib.rcParams.update({'font.size':14})
 
-params = batman.TransitParams()	        #object to store transit parameters
+params = robin.TransitParams()	        #object to store transit parameters
 params.t0 = 0. 				#time of periastron passage (for eccentric orbits), OR
 					#mid-transit time (for circular orbits)
 params.per = 1.58			#orbital period	
@@ -23,7 +23,7 @@ params.limb_dark = "nonlinear"          #limb darkening model
 params.u = [0.5, 0.1, 0.1, -0.1]       	#limb darkening coefficients
    
 t = np.linspace(-0.025, 0.025, 1000)  	#times at which to calculate light curve	
-m = batman.TransitModel(params, t)      #initializes model
+m = robin.TransitModel(params, t)      #initializes model
 
 flux = m.light_curve(params)		#calculates light curve
 
