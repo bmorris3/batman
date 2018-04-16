@@ -77,11 +77,11 @@ _eclipse = Extension('robin._eclipse', ['c_src/_eclipse.c'], extra_compile_args 
 
 setup(	name='robin-package',
 	version="0.1",
-	author='Brett Morris & Laura Kreidberg",
+	author='Brett Morris & Laura Kreidberg',
 	author_email = 'bmmorris@uw.edu',
 	url = 'https://github.com/bmmorris3/robin',
 	packages =['robin'],
-	license = ['GNU GPLv3'],å
+	license = ['GNU GPLv3'],
 	description ='Fast transit light curve modeling',
 	classifiers = [
 		'Development Status :: 5 - Production/Stable',
