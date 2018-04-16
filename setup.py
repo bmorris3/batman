@@ -76,10 +76,10 @@ _rsky = Extension('robin._rsky', ['c_src/_rsky.c'], extra_compile_args = paralle
 _eclipse = Extension('robin._eclipse', ['c_src/_eclipse.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
 
 setup(	name='robin-package',
-	version="0.1",
+	version="0.1.2",
 	author='Brett Morris & Laura Kreidberg',
 	author_email = 'bmmorris@uw.edu',
-	url = 'https://github.com/bmmorris3/robin',
+	url = 'https://github.com/bmorris3/robin',
 	packages =['robin'],
 	license = ['GNU GPLv3'],
 	description ='Fast transit light curve modeling',
