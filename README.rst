@@ -1,4 +1,4 @@
-robin: Bad-Ass Transit Model cAlculatioN
-=========================================
+robin: ROBust exoplanet radii from INgress/egress durations
+===========================================================
 
-The ``robin`` package for Python makes super fast calculation of transit light curves easy.  Check out the docs at https://www.cfa.harvard.edu/~lkreidberg/robin/.
+The ``robin`` package for Python makes super fast calculation of transit light curves easy.
