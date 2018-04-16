@@ -68,10 +68,10 @@ parallel_libraries = ['gomp'] if needs_gomp else []
 _nonlinear_ld = Extension('robin._nonlinear_ld', ['c_src/_nonlinear_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
 _quadratic_ld = Extension('robin._quadratic_ld', ['c_src/_quadratic_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
 _uniform_ld   = Extension('robin._uniform_ld', ['c_src/_uniform_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
-# _logarithmic_ld   = Extension('robin._logarithmic_ld', ['c_src/_logarithmic_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
-# _exponential_ld   = Extension('robin._exponential_ld', ['c_src/_exponential_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
-# _custom_ld   = Extension('robin._custom_ld', ['c_src/_custom_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
-# _power2_ld   = Extension('robin._power2_ld', ['c_src/_power2_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
+_logarithmic_ld   = Extension('robin._logarithmic_ld', ['c_src/_logarithmic_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
+_exponential_ld   = Extension('robin._exponential_ld', ['c_src/_exponential_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
+_custom_ld   = Extension('robin._custom_ld', ['c_src/_custom_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
+_power2_ld   = Extension('robin._power2_ld', ['c_src/_power2_ld.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
 _rsky = Extension('robin._rsky', ['c_src/_rsky.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
 _eclipse = Extension('robin._eclipse', ['c_src/_eclipse.c'], extra_compile_args = parallel_args, libraries = parallel_libraries)
 
@@ -94,5 +94,5 @@ setup(	name='robin-package',
 	extras_requires= {
 	    'matplotlib': ['matplotlib'],
 	},
-	ext_modules=[_nonlinear_ld, _quadratic_ld, _uniform_ld, _rsky, _eclipse] # _logarithmic_ld, _exponential_ld, _power2_ld, _custom_ld,
+	ext_modules=[_nonlinear_ld, _quadratic_ld, _uniform_ld, _rsky, _eclipse, _logarithmic_ld, _exponential_ld, _power2_ld, _custom_ld]
 )

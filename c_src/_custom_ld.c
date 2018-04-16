@@ -41,12 +41,12 @@ inline double intensity(double x, double* args)
 
 static PyObject *_custom_ld(PyObject *self, PyObject *args)
 {
-	double rprs, fac, c1, c2, c3, c4, c5, c6;
+	double p0, p1, fac, c1, c2, c3, c4, c5, c6;
 	int nthreads;
 	npy_intp dims[1];
 	PyArrayObject *ds, *flux;
 
-  	if(!PyArg_ParseTuple(args,"Oddddddddi", &ds, &rprs, &c1, &c2, &c3, &c4, &c5, &c6, &fac, &nthreads)) return NULL; //parses input arguments
+  	if(!PyArg_ParseTuple(args,"Odddddddddi", &ds, &p0, &p1, &c1, &c2, &c3, &c4, &c5, &c6, &fac, &nthreads)) return NULL; //parses input arguments
 	
 	dims[0] = PyArray_DIMS(ds)[0]; 
 	flux = (PyArrayObject *) PyArray_SimpleNew(1, dims, PyArray_TYPE(ds));	//creates numpy array to store return flux values
@@ -69,7 +69,7 @@ static PyObject *_custom_ld(PyObject *self, PyObject *args)
 
 	double intensity_args[] = {c1, c2, c3, c4, c5, c6};
 	#pragma acc data copyin(intensity_args)
-	calc_limb_darkening(f_array, d_array, dims[0], rprs, fac, nthreads, intensity_args);
+	calc_limb_darkening(f_array, d_array, dims[0], p0, p1, fac, nthreads, intensity_args);
 	return PyArray_Return((PyArrayObject *)flux);
 } 
 
